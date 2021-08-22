@@ -7,22 +7,32 @@ use Lib\App;
 
 class MainController {
 
+    const PAGE_SIZE = 3;
+
     /**
-     * @param int $from
-     * @param int $to
+     * @param int $page
      * @param string $field
      * @param string $order
      * @return array
      * @throws \Exception
      */
-    public function index($from=0, $to=3, $field='id', $order=null){
+    public function index($page=0, $field='id', $order=null){
         $order = $order === null ? "" : "DESC";
         return [
             'view' => "index",
-            'model' => Tasks::getFromTo($from, $to, $field, $order)
+            'model' => Tasks::getFromTo($page * self::PAGE_SIZE, self::PAGE_SIZE, $field, $order),
+            'pagination' => [
+                'page' => $page,
+                'pages' => ceil(Tasks::count()/self::PAGE_SIZE)
+            ]
         ];
     }
 
+    /**
+     * @param $name
+     * @param $password
+     * @throws \Exception
+     */
     public function login($name, $password){
         $user = Users::findByName($name);
         if (!empty($user) && $user->verify($password)) {
@@ -61,6 +71,7 @@ class MainController {
      * @param $task
      * @param int $ready
      * @throws \RedBeanPHP\RedException\SQL
+     * @throws \Exception
      */
     public function add($title, $task, $ready = 0) {
         $t = new Tasks();

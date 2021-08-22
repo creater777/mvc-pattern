@@ -1,3 +1,17 @@
-.header{
-    height: 5em;
+.pagination>li>a,
+.pagination>li>a:hover,
+.pagination>li>span {
+    border: 1px solid gray;
+    color: #000;
+}
+.pagination>li.active>.page-link {
+    background: gray;
+    border: 1px solid gray;
+    color: #fff;
+}
+
+.page-link:focus {
+    z-index: 3;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(128, 128, 128, 0.25);
 }

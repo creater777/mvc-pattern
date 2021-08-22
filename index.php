@@ -18,6 +18,7 @@ try {
     $result = App::run(new App::$controllerName(), App::$method, App::$requestArguments);
     $view = $result['view'];
     $model = $result['model'];
+    $pagination = $result['pagination'];
     $result && require App::getView($view);
 } catch (Exception $e) {
     App::pushError($e->getMessage());

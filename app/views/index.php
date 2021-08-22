@@ -1,6 +1,7 @@
 <?
 /**
  * @var Tasks[] $model
+ * @var [] $pagination
  */
 
 use App\models\Tasks;
@@ -20,13 +21,16 @@ $labels = Tasks::labels;
             data-task=""
             data-ready=""
             data-action="add"
-    >+</button>
+    >+
+    </button>
 </div>
+<ul class="pagination">
+</ul>
 <table class="table table-striped">
     <thead>
     <tr>
         <? foreach ($labels as $key => $label): ?>
-            <th scope="col" style="cursor: pointer;" onclick="sort('<?=$key?>')">
+            <th scope="col" style="cursor: pointer;" onclick="sort('<?= $key ?>')">
                 <?= $label ?>
             </th>
         <? endforeach; ?>
@@ -69,7 +73,7 @@ $labels = Tasks::labels;
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="/web">
+            <form action="<?=App::$config['HTTPRoot']?>">
                 <div class="modal-body">
                     <input type="hidden" name="c" value="main">
                     <input type="hidden" name="m">
@@ -97,16 +101,60 @@ $labels = Tasks::labels;
 </div>
 
 <script>
-    var params = window.location.search.replace('?', '').split('&').reduce(
-        function (p, e) {
-            var a = e.split('=');
-            p[decodeURIComponent(a[0])] = decodeURIComponent(a[1]);
-            return p;
-        },{}),
-        sort = function (field) {
-            var query = params['field'] === field && !params['order'] ? '&order=desc' : '';
-            document.location = "/web/?c=main&m=index&field=" + field + query;
-        };
+    var urlToPerams = function(){
+        return window.location.search.replace('?', '').split('&').reduce(
+            function (p, e) {
+                var a = e.split('=');
+                p[decodeURIComponent(a[0])] = decodeURIComponent(a[1]);
+                return p;
+            }, {});
+    };
+
+    var sort = function (field) {
+        var query = urlParams.field === field && !urlParams.order ? '&order=desc' : '';
+        document.location = "<?=App::$config['HTTPRoot']?>/?c=main&m=index&field=" + field + query;
+    };
+
+    var paramsToUrl = function(key, value){
+        let params = urlToPerams();
+        params[key] = value;
+        return "<?=App::$config['HTTPRoot']?>/?"+Object.keys(params).map(function(k){
+            return k + '=' +params[k]
+        }).join('&');
+    };
+
+    var urlParams = urlToPerams();
+
+    $(document).ready(function () {
+        var pag = $('.pagination');
+        var page = urlParams['page'] * 1 || 0;
+        var pages = <?=$pagination['pages'] + 0?>;
+
+        page && pag.append('<li class="page-item">' +
+            '<a class="page-link" href="' + paramsToUrl("page", 0) + '" aria-label="Previous">' +
+            '  <span aria-hidden="true">&laquo;</span>' +
+            '</a></li>');
+        for (let num = page - 1; num < pages && (num <= page + 1); num++){
+            if (num < 0){
+                continue;
+            }
+            if (page === num){
+                pag.append(
+                    '<li class="page-item active"><span class="page-link">' + (num + 1) + '</span></li>'
+                );
+            } else {
+                pag.append(
+                    '<li class="page-item">' +
+                        '<a class="page-link" href="' + paramsToUrl("page", num) + '">' + (num + 1) + '</a>' +
+                    '</li>');
+            }
+        }
+        page < pages - 1 && pag.append('<li class="page-item">' +
+            '<a class="page-link" href="' + paramsToUrl("page", pages-1)+ '" aria-label="Next">' +
+            '<span aria-hidden="true">&raquo;</span>' +
+            '</a></li>')
+    });
+
     $('#editForm').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget),
             modal = $(this),

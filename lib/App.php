@@ -118,6 +118,7 @@ class App
         if (!self::$DB->configure(self::$config['DB'])) {
             throw new \Exception("Unable connect to DB server");
         };
+        self::$DB::debug(self::$config['debug']);
     }
 
     /**

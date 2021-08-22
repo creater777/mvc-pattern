@@ -48,6 +48,14 @@ class BaseModel extends SimpleModel
     }
 
     /**
+     * @return int
+     * @throws \Exception
+     */
+    public static function count(){
+        return App::getDBInstance()::count(self::getTable());
+    }
+
+    /**
      * @param $id
      * @return mixed
      * @throws \Exception
