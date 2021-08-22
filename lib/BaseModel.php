@@ -1,6 +1,7 @@
 <?php
 namespace Lib;
 
+use RedBeanPHP\OODBBean;
 use RedBeanPHP\SimpleModel;
 
 class BaseModel extends SimpleModel
@@ -10,13 +11,13 @@ class BaseModel extends SimpleModel
 
     /**
      * BaseModel constructor.
-     * @param null $bean
+     * @param OODBBean $bean
      * @throws \Exception
      */
     public function __construct($bean = null) {
         $this->childClass = get_called_class();
         $this->table = self::getTable();
-        $this->loadBean($bean === null ?
+        $this->loadBean($bean === null || $bean->isEmpty() ?
             App::getDBInstance()::dispense(self::getTable()) :
             $bean
         );
@@ -30,16 +31,19 @@ class BaseModel extends SimpleModel
     /**
      * @param $from
      * @param $to
+     * @param $field
+     * @param $order
      * @return array
      * @throws \Exception
      */
-    public static function getFromTo($from, $to){
+    public static function getFromTo($from, $to, $field, $order){
         $childClass = get_called_class();
-        $list = App::getDBInstance()::find(self::getTable(), "LIMIT $from, $to");
+        $list = App::getDBInstance()::find(self::getTable(),
+            "ORDER BY :field :order LIMIT :from, :to",
+            ['from' => $from, 'to' => $to, 'field' => $field, 'order' => $order]
+        );
         return array_map(function($row) use ($childClass){
-            $child = new $childClass();
-            $child->loadBean($row);
-            return $child;
+            return new $childClass($row);
         }, $list);
     }
 
@@ -51,9 +55,7 @@ class BaseModel extends SimpleModel
     public static function find($id){
         $childClass = get_called_class();
         $row = App::getDBInstance()::findOne(self::getTable(), 'id=:id', ["id" => $id]);
-        $child = new $childClass();
-        $child->loadBean($row);
-        return $child;
+        return new $childClass($row);
     }
 
     /**

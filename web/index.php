@@ -17,7 +17,6 @@ include "../index.php";
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="/web/res/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/web/res/custom.css">
-<!--    <script type="text/javascript" src="/web/res/script.js"></script>-->
     <title>Тестовое приложение</title>
 </head>
 <body>
@@ -25,7 +24,7 @@ include "../index.php";
 <main role="main" class="container">
 
     <? foreach ($errors as $error): ?>
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <div class="alert alert-warning alert-dismissible fade show mt-2" role="alert">
             <?= $error ?>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>

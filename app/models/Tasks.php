@@ -12,6 +12,8 @@ use Lib\BaseModel;
  */
 class Tasks extends BaseModel
 {
+    private static $users = [];
+
     public const labels = [
         'id' => '#',
         'title' => 'Заголовок',
@@ -25,7 +27,10 @@ class Tasks extends BaseModel
      * @return Users
      */
     public function getUser(){
-        return Users::find($this->userId);
+        if (self::$users[$this->userId] === null){
+            self::$users[$this->userId] = Users::find($this->userId);
+        }
+        return self::$users[$this->userId];
     }
 
     public function getUserEMail(){

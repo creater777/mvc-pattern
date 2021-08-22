@@ -15,8 +15,7 @@ try{
 
 ob_start();
 try {
-    $controller = new App::$controllerName();
-    $result = $controller->{App::$method}(...App::$requestArguments);
+    $result = App::run(new App::$controllerName(), App::$method, App::$requestArguments);
     $view = $result['view'];
     $model = $result['model'];
     $result && require App::getView($view);

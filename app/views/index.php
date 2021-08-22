@@ -8,12 +8,27 @@ use Lib\App;
 
 $labels = Tasks::labels;
 ?>
-<h1>Список задач</h1>
+
+<div class="row">
+    <div class="col display-4">Список задач</div>
+    <div class="mr-auto"></div>
+    <button type="button" class="btn btn-primary m-3"
+            data-toggle="modal"
+            data-target="#editForm"
+            data-id=""
+            data-title=""
+            data-task=""
+            data-ready=""
+            data-action="add"
+    >+</button>
+</div>
 <table class="table table-striped">
     <thead>
     <tr>
         <? foreach ($labels as $key => $label): ?>
-            <th scope="col"><?= $label ?></th>
+            <th scope="col" style="cursor: pointer;" onclick="sort('<?=$key?>')">
+                <?= $label ?>
+            </th>
         <? endforeach; ?>
         <? if (App::userIsLogged()): ?>
             <th scope="col">Действие</th>
@@ -28,12 +43,15 @@ $labels = Tasks::labels;
             <? endforeach; ?>
             <? if (App::userIsLogged()): ?>
                 <td>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editForm"
+                    <button type="button" class="btn btn-primary"
+                            data-toggle="modal"
+                            data-target="#editForm"
                             data-id="<?= $task->id ?>"
                             data-title="<?= $task->title ?>"
                             data-task="<?= $task->task ?>"
                             data-ready="<?= $task->ready ?>"
-                    >Редактировать
+                            data-action="change"
+                    >&#128393;
                     </button>
                 </td>
             <? endif; ?>
@@ -54,7 +72,7 @@ $labels = Tasks::labels;
             <form action="/web">
                 <div class="modal-body">
                     <input type="hidden" name="c" value="main">
-                    <input type="hidden" name="m" value="change">
+                    <input type="hidden" name="m">
                     <input type="hidden" name="id">
                     <div class="form-group">
                         <label class="col-form-label">Задача:</label>
@@ -71,7 +89,7 @@ $labels = Tasks::labels;
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                    <button type="submit" class="btn btn-primary">Изменить</button>
+                    <button type="submit" class="btn btn-primary"></button>
                 </div>
             </form>
         </div>
@@ -79,19 +97,31 @@ $labels = Tasks::labels;
 </div>
 
 <script>
+    var params = window.location.search.replace('?', '').split('&').reduce(
+        function (p, e) {
+            var a = e.split('=');
+            p[decodeURIComponent(a[0])] = decodeURIComponent(a[1]);
+            return p;
+        },{}),
+        sort = function (field) {
+            var query = params['field'] === field && !params['order'] ? '&order=desc' : '';
+            document.location = "/web/?c=main&m=index&field=" + field + query;
+        };
     $('#editForm').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var title = button.data('title'),
+        var button = $(event.relatedTarget),
+            modal = $(this),
+            title = button.data('title'),
             task = button.data('task'),
             id = button.data('id'),
-            ready = button.data('ready')
+            ready = button.data('ready'),
+            action = button.data('action')
         ;
-        console.log(ready)
-        var modal = $(this);
-        modal.find('.modal-title').text(title);
+        modal.find('.modal-title').text(id ? title : "Добавить запись");
+        modal.find('.modal-body input[name="m"]').val(action);
         modal.find('.modal-body input[name="id"]').val(id);
         modal.find('.modal-body input[name="title"]').val(title);
         modal.find('.modal-body textarea[name="task"]').val(task);
         modal.find('.modal-body input[name="ready"]').prop('checked', ready);
+        modal.find('.modal-footer button[type="submit"]').text(id ? 'Изменить' : 'Добавить');
     })
 </script>

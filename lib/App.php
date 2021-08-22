@@ -9,6 +9,7 @@
 namespace Lib;
 
 use RedBeanPHP\Facade;
+use ReflectionMethod;
 
 class App
 {
@@ -52,7 +53,6 @@ class App
         self::$requestArguments = $_GET;
         unset(self::$requestArguments['c']);
         unset(self::$requestArguments['m']);
-        self::$requestArguments = array_values(self::$requestArguments);
     }
 
     /**
@@ -83,6 +83,28 @@ class App
         self::initConfig();
         self::configureRequest();
         self::initUser();
+    }
+
+    /**
+     * @param $object
+     * @param $method
+     * @param array $args
+     * @return mixed
+     * @throws \ReflectionException
+     */
+    public static function run($object, $method, array $args = array())
+    {
+        $reflection = new ReflectionMethod($object, $method);
+
+        $pass = array();
+        foreach ($reflection->getParameters() as $param) {
+            if (isset($args[$param->getName()])) {
+                $pass[] = $args[$param->getName()];
+            } else {
+                $pass[] = $param->getDefaultValue();
+            }
+        }
+        return $reflection->invokeArgs($object, $pass);
     }
 
     /**
