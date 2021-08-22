@@ -4,6 +4,9 @@ namespace App\models;
 use Lib\BaseModel;
 
 /**
+ * @property int id
+ * @property int title
+ * @property int task
  * @property int userId
  * @property bool ready
  */
@@ -15,7 +18,7 @@ class Tasks extends BaseModel
         'task' => 'Описание задачи',
         'user' => 'Пользователь',
         'userEmail' => 'email',
-        'ready' => 'Статус'
+        'visualReady' => 'Статус',
     ];
 
     /**
@@ -29,7 +32,7 @@ class Tasks extends BaseModel
         return Users::find($this->userId)->email;
     }
 
-    public function getReady(){
+    public function getVisualReady(){
         return $this->ready ? 'Выполненно' : 'Не выполненно';
     }
 }

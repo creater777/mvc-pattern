@@ -4,3 +4,4 @@ web/res/*.min.js
 web/res/*.min.js.map
 web/res/*.min.css
 web/res/*.min.css.map
+web/res/*.min.map

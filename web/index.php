@@ -33,12 +33,13 @@ include "../index.php";
         </div>
     <? endforeach; ?>
 
+    <script type="text/javascript" src="/web/res/jquery.min.js"></script>
+    <script type="text/javascript" src="/web/res/bootstrap.min.js"></script>
+
     <?= $content ?>
 
 </main>
 <? require_once App::getView("footer"); ?>
 
-<script type="text/javascript" src="/web/res/jquery.min.js"></script>
-<script type="text/javascript" src="/web/res/bootstrap.min.js"></script>
 </body>
 </html>

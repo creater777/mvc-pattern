@@ -121,6 +121,10 @@ class App
         header('Location: /web/');
     }
 
+    public static function goBack(){
+        header("Location: ".$_SERVER['HTTP_REFERER']);
+    }
+
     public static function pushError($error){
         $_SESSION['errors'][] = $error;
     }

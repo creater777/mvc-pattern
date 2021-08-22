@@ -21,11 +21,22 @@ class MainController {
         } else {
             App::pushError("Не верен логин или пароль");
         };
-        App::goHome();
+        App::goBack();
     }
 
     public function logout(){
         App::logout();
-        App::goHome();
+        App::goBack();
+    }
+
+    public function change($id, $title, $task, $ready = 0){
+        $t = Tasks::find($id);
+        if ($t !== null && App::userIsLogged()){
+            $t->title = $title;
+            $t->task = $task;
+            $t->ready = $ready;
+            $t->store();
+        }
+        App::goBack();
     }
 }
